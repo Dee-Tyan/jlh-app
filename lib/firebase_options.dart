@@ -72,4 +72,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'jlk-app-83477.appspot.com',
     iosBundleId: 'dev.flutter.platformDesign',
   );
+
 }

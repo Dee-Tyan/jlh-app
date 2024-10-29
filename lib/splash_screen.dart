@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'welcome_screen.dart'; // Import your WelcomeScreen
+// import 'welcome_screen.dart'; // Import your WelcomeScreen
+import 'login_screen.dart';
 // Import other necessary screens
 
 class SplashScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       // User is not logged in, navigate to the welcome screen
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => WelcomeScreen()));
+          context, MaterialPageRoute(builder: (context) => LoginScreen()));
     }
   }
 
@@ -41,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/jlk_logo.png', // Replace with your app logo asset path
+              'assets/images/jlk_logo.png', // Replace with your app logo asset path
               height: 100,
               width: 100,
             ),

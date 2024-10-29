@@ -24,7 +24,9 @@ import 'interest_selection_screen.dart'; //second screen after linked screen - i
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Initialize Firebase 
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  ); // Initialize Firebase 
   runApp(MyAdaptingApp());
 }
 
@@ -62,7 +64,7 @@ class MyAdaptingApp extends StatelessWidget {
           child: Material(child: child),
         );
       },
-      home: const PlatformAdaptingHomePage(),
+      // home: const PlatformAdaptingHomePage(),
     );
   }
 }
