@@ -14,6 +14,12 @@ import 'welcome_screen.dart'; //third screen before accessing main app
 import 'signup_screen.dart'; //linked screen
 import 'interest_selection_screen.dart'; //second screen after linked screen - if user doesn't have an account
 
+const Color babyPowder = Color(0xFFFFF7F7); // Baby Powder
+const Color pinkLavender = Color(0xFFFBCAEF); // Pink Lavender
+const Color darkPink = Color(0xFF8A1C7C); // Dark Pink
+const Color blackOlive = Color(0xFF343633); // Black Olive
+const Color licorice = Color(0xFF0B0014); // Licorice
+
 // void main() =>  runApp(const MyAdaptingApp());
 
 // WidgetsFlutterBinding.ensureInitialized();
@@ -26,11 +32,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  ); // Initialize Firebase 
+  ); // Initialize Firebase
   runApp(MyAdaptingApp());
 }
-
-
 
 class MyAdaptingApp extends StatelessWidget {
   const MyAdaptingApp({super.key});
@@ -41,11 +45,47 @@ class MyAdaptingApp extends StatelessWidget {
     // Apps.
     return MaterialApp(
       title: 'Just Like Her App',
+      // theme: ThemeData(
+      //   // Use the green theme for Material widgets.
+      //   primarySwatch: Colors.green,
+      // ),
+      // darkTheme: ThemeData.dark(),
       theme: ThemeData(
-        // Use the green theme for Material widgets.
-        primarySwatch: Colors.green,
+        primaryColor: darkPink,
+        scaffoldBackgroundColor: babyPowder,
+        appBarTheme: AppBarTheme(
+          backgroundColor: darkPink,
+          foregroundColor: babyPowder,
+        ),
+        colorScheme: ColorScheme.light(
+          primary: darkPink,
+          secondary: pinkLavender,
+          surface: babyPowder,
+          // surface: blackOlive,
+        ),
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: blackOlive),
+          bodyMedium: TextStyle(color: licorice),
+        ),
       ),
-      darkTheme: ThemeData.dark(),
+      darkTheme: ThemeData(
+        primaryColor: licorice,
+        scaffoldBackgroundColor: blackOlive,
+        appBarTheme: AppBarTheme(
+          backgroundColor: licorice,
+          foregroundColor: babyPowder,
+        ),
+        colorScheme: ColorScheme.dark(
+          primary: licorice,
+          secondary: darkPink,
+          background: blackOlive,
+          surface: pinkLavender,
+        ),
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: babyPowder),
+          bodyMedium: TextStyle(color: pinkLavender),
+        ),
+      ),
       initialRoute: '/', // Starting with SplashScreen
       routes: {
         '/': (context) => SplashScreen(), // Starting with Splash Screen
@@ -53,14 +93,28 @@ class MyAdaptingApp extends StatelessWidget {
         '/welcome': (context) => WelcomeScreen(),
         '/signup': (context) => SignupScreen(),
         '/interestSelection': (context) => InterestSelectionScreen(),
-        '/main': (context) => const PlatformAdaptingHomePage(), // Main app content
+        '/main': (context) =>
+            const PlatformAdaptingHomePage(), // Main app content
       },
+      // builder: (context, child) {
+      //   return CupertinoTheme(
+      //     // Instead of letting Cupertino widgets auto-adapt to the Material
+      //     // theme (which is green), this app will use a different theme
+      //     // for Cupertino (which is blue by default).
+      //     data: const CupertinoThemeData(),
+      //     child: Material(child: child),
+      //   );
+      // },
       builder: (context, child) {
         return CupertinoTheme(
-          // Instead of letting Cupertino widgets auto-adapt to the Material
-          // theme (which is green), this app will use a different theme
-          // for Cupertino (which is blue by default).
-          data: const CupertinoThemeData(),
+          data: CupertinoThemeData(
+            primaryColor: darkPink,
+            barBackgroundColor: licorice,
+            scaffoldBackgroundColor: babyPowder,
+            textTheme: CupertinoTextThemeData(
+              textStyle: TextStyle(color: blackOlive),
+            ),
+          ),
           child: Material(child: child),
         );
       },
