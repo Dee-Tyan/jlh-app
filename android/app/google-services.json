@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "668466641723",
+    "project_id": "jlk-app-83477",
+    "storage_bucket": "jlk-app-83477.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668466641723:android:e75d47d02839ffe014d51e",
+        "android_client_info": {
+          "package_name": "com.example.gemini_io_talk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8G4k_rkOeKuTKjJgqht8UBZBlpZ_HtCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668466641723:android:6168d6b1154e645714d51e",
+        "android_client_info": {
+          "package_name": "dev.flutter.platform_design"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8G4k_rkOeKuTKjJgqht8UBZBlpZ_HtCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

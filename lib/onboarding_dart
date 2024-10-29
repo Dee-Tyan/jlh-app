@@ -1,0 +1,46 @@
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+// ... other imports
+
+class OnboardingFlow extends StatefulWidget {
+  @override
+  _OnboardingFlowState createState() => _OnboardingFlowState();
+}
+
+class _OnboardingFlowState extends State<OnboardingFlow> {
+  // ... State variables for authentication and interest selection
+
+  // ... Functions for handling sign-up, login, interest selection
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // Use a PageView or similar widget to navigate between screens
+      body: PageView(
+        children: [
+          WelcomeScreen(),
+          AuthenticationScreen(),
+          InterestSelectionScreen(),
+          OnboardingCompleteScreen(),
+        ],
+      ),
+    );
+  }
+}
+
+// Example of saving user interests to Firestore
+Future<void> saveUserInterests(List<String> interests) async {
+  try {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set({'interests': interests});
+    }
+  } catch (e) {
+    print('Error saving user interests: $e');
+  }
+}
