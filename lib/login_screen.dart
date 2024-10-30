@@ -139,7 +139,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(
                           color: darkPink,
                           fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
                         ),
                       ),
                     ),
