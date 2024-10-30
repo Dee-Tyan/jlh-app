@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'interest_selection_screen.dart'; // Import InterestSelectionScreen
-import 'signup_screen.dart'; // Import SignupScreen for navigation to signup
+import 'package:shared_preferences/shared_preferences.dart';
+import 'interest_selection_screen.dart';
+import 'signup_screen.dart';
+import 'main.dart'; // Import your main page
 
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
+
 const Color babyPowder = Color(0xFFFFF7F7); // Baby Powder
 const Color pinkLavender = Color(0xFFFBCAEF); // Pink Lavender
 const Color darkPink = Color(0xFF8A1C7C); // Dark Pink
@@ -26,15 +29,27 @@ class _LoginScreenState extends State<LoginScreen> {
               email: _emailController.text.trim(),
               password: _passwordController.text);
 
-      // Login successful, navigate to InterestSelectionScreen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => InterestSelectionScreen(),
-        ),
-      );
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool interestSelected = prefs.getBool('interestSelected') ?? false;
+
+      if (interestSelected) {
+        // Navigate to Main Page if interest is already selected
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PlatformAdaptingHomePage(),
+          ),
+        );
+      } else {
+        // Navigate to Interest Selection if interest is not yet selected
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => InterestSelectionScreen(),
+          ),
+        );
+      }
     } on FirebaseAuthException catch (e) {
-      // Handle login errors
       setState(() {
         _errorMessage = e.message;
       });
@@ -58,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Welcome Back!',
+                  'Hey Girl, Welcome Back!',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -111,8 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        pinkLavender, // Update from 'primary' to 'backgroundColor'
+                    backgroundColor: pinkLavender,
                     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -127,7 +141,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text("Don’t have an account? "),
                     GestureDetector(
                       onTap: () {
-                        // Navigate to SignupScreen
                         Navigator.push(
                           context,
                           MaterialPageRoute(
