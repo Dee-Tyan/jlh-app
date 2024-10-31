@@ -1,7 +1,3 @@
-// Copyright 2020 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,22 +8,34 @@ class PlatformWidget extends StatelessWidget {
     super.key,
     required this.androidBuilder,
     required this.iosBuilder,
+    this.macBuilder,
   });
 
   final WidgetBuilder androidBuilder;
   final WidgetBuilder iosBuilder;
+  final WidgetBuilder? macBuilder;
 
   @override
   Widget build(context) {
-    assert(
-        defaultTargetPlatform == TargetPlatform.android ||
-            defaultTargetPlatform == TargetPlatform.iOS,
-        'Unexpected platform $defaultTargetPlatform');
-    return switch (defaultTargetPlatform) {
-      TargetPlatform.android => androidBuilder(context),
-      TargetPlatform.iOS => iosBuilder(context),
-      _ => const SizedBox.shrink()
-    };
+  //   assert(
+  //       defaultTargetPlatform == TargetPlatform.android ||
+  //           defaultTargetPlatform == TargetPlatform.iOS,
+  //       'Unexpected platform $defaultTargetPlatform');
+  //   return switch (defaultTargetPlatform) {
+  //     TargetPlatform.android => androidBuilder(context),
+  //     TargetPlatform.iOS => iosBuilder(context),
+  //     _ => const SizedBox.shrink()
+  //   };
+  // }
+      if (defaultTargetPlatform == TargetPlatform.android) {
+      return androidBuilder(context);
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return iosBuilder(context);
+    } else if (defaultTargetPlatform == TargetPlatform.macOS) {
+      return macBuilder != null ? macBuilder!(context) : iosBuilder(context);
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 }
 
@@ -276,19 +284,14 @@ class SongPlaceholderTile extends StatelessWidget {
   }
 }
 
-// ===========================================================================
-// Non-shared code below because different interfaces are shown to prompt
-// for a multiple-choice answer.
-//
-// This is a design choice and you may want to do something different in your
-// app.
-// ===========================================================================
 /// This uses a platform-appropriate mechanism to show users multiple choices.
 ///
 /// On Android, it uses a dialog with radio buttons. On iOS, it uses a picker.
+/// On macOS, it falls back to an Android-style dialog.
 void showChoices(BuildContext context, List<String> choices) {
   switch (defaultTargetPlatform) {
     case TargetPlatform.android:
+    case TargetPlatform.macOS:
       showDialog<void>(
         context: context,
         builder: (context) {
