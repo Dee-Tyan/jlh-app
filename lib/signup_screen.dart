@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'interest_selection_screen.dart';
 import 'login_screen.dart';
 
@@ -12,31 +13,43 @@ class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _countryController = TextEditingController();
   String? _errorMessage;
 
   Future<void> _signup() async {
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: _emailController.text.trim(),
-              password: _passwordController.text);
+    if (_formKey.currentState!.validate()) {
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: _emailController.text.trim(),
+                password: _passwordController.text);
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => InterestSelectionScreen(),
-        ),
-      );
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        if (e.code == 'weak-password') {
-          _errorMessage = 'The password provided is too weak.';
-        } else if (e.code == 'email-already-in-use') {
-          _errorMessage = 'The account already exists for that email.';
-        } else {
-          _errorMessage = 'An error occurred. Please try again.';
-        }
-      });
+        // Store additional user info in Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+          'name': _nameController.text.trim(),
+          'country': _countryController.text.trim(),
+          'email': _emailController.text.trim(),
+        });
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => InterestSelectionScreen(),
+          ),
+        );
+      } on FirebaseAuthException catch (e) {
+        setState(() {
+          _errorMessage = e.code == 'weak-password'
+              ? 'The password provided is too weak.'
+              : e.code == 'email-already-in-use'
+                  ? 'The account already exists for that email.'
+                  : 'An error occurred. Please try again.';
+        });
+      }
     }
   }
 
@@ -56,6 +69,34 @@ class _SignupScreenState extends State<SignupScreen> {
               key: _formKey,
               child: Column(
                 children: [
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Full Name',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your name';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: _countryController,
+                    decoration: InputDecoration(
+                      labelText: 'Country',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your country';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
                   TextFormField(
                     controller: _emailController,
                     decoration: InputDecoration(
@@ -93,11 +134,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ],
                   SizedBox(height: 30),
                   ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _signup();
-                      }
-                    },
+                    onPressed: _signup,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF8A1C7C), // Dark Pink
                       foregroundColor: Color(0xFFFFF7), // Baby Powder
@@ -142,6 +179,8 @@ class _SignupScreenState extends State<SignupScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _nameController.dispose();
+    _countryController.dispose();
     super.dispose();
   }
 }
