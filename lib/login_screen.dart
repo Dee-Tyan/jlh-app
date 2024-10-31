@@ -73,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Hey Girl, Welcome Back!',
+                  'Hey Girl, Welcome Back!!!',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
