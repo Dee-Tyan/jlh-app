@@ -73,7 +73,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     controller: _nameController,
                     decoration: InputDecoration(
                       labelText: 'Full Name',
+                       prefixIcon: Icon(Icons.person, color: darkPink),
                       border: OutlineInputBorder(),
+                     
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -88,6 +90,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     decoration: InputDecoration(
                       labelText: 'Country',
                       border: OutlineInputBorder(),
+                         prefixIcon: Icon(Icons.flag, color: darkPink),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -102,6 +105,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     decoration: InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.email, color: darkPink),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -116,6 +120,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     decoration: InputDecoration(
                       labelText: 'Password',
                       border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.lock, color: darkPink),
                     ),
                     obscureText: true,
                     validator: (value) {
@@ -137,7 +142,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     onPressed: _signup,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF8A1C7C), // Dark Pink
-                      foregroundColor: Color(0xFFFFF7), // Baby Powder
+                      foregroundColor: Color(0xFFFFF7F7), // Baby Powder
                       padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),

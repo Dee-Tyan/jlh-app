@@ -6,6 +6,35 @@ import 'utils.dart';
 import 'widgets.dart';
 import 'recommendations_details.dart';
 
+class FutureSelfView extends StatelessWidget {
+  final String originalImageUrl;
+  final String? enhancedImageUrl;
+
+  const FutureSelfView({
+    required this.originalImageUrl,
+    this.enhancedImageUrl,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("Current You"),
+        Image.network(originalImageUrl),
+        const SizedBox(height: 20),
+        Text("Future You"),
+        if (enhancedImageUrl != null)
+          Image.network(enhancedImageUrl!)
+        else
+          const CircularProgressIndicator(),
+      ],
+    );
+  }
+}
+
+
 class RecommendationsTab extends StatefulWidget {
   static const title = 'Recommendations';
   static const androidIcon = Icon(Icons.recommend);
