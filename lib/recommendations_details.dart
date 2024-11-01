@@ -3,6 +3,23 @@ import 'package:flutter/material.dart';
 import 'hero_animating_recommendation_card.dart'; // Add this import
 import 'widgets.dart';
 
+
+class RecommendationPlaceholderTile extends StatelessWidget {
+  const RecommendationPlaceholderTile({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.recommend),
+      title: const Text('Recommendation Placeholder'),
+      subtitle: const Text('More details about this recommendation...'),
+      onTap: () {
+        // You can add an action here if needed
+      },
+    );
+  }
+}
+
 /// Page shown when a card in the recommendations tab is tapped.
 ///
 /// On Android, this page sits at the top of your app. On iOS, this page is on
@@ -32,14 +49,14 @@ class RecommendationDetailTab extends StatelessWidget {
             child: HeroAnimatingRecommendationCard(
               recommendation: recommendation,
               color: color,
-              heroAnimation: const AlwaysStoppedAnimation(1),
+              heroAnimation: const AlwaysStoppedAnimation(1), onPressed: () {  },
             ),
             flightShuttleBuilder: (context, animation, flightDirection,
                 fromHeroContext, toHeroContext) {
               return HeroAnimatingRecommendationCard(
                 recommendation: recommendation,
                 color: color,
-                heroAnimation: animation,
+                heroAnimation: animation, onPressed: () {  },
               );
             },
           ),

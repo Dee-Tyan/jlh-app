@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class HeroAnimatingRecommendationCard extends StatelessWidget {
   final String recommendation;
-  final MaterialColor color;
+  final Color color; // Changed from MaterialColor to Color
   final Animation<double> heroAnimation;
   final VoidCallback onPressed;
 
@@ -27,15 +27,18 @@ class HeroAnimatingRecommendationCard extends StatelessWidget {
               Hero(
                 tag: recommendation,
                 child: CircleAvatar(
-                  backgroundColor: color.shade200,
-                  child: Text(recommendation[0]), // Display the first letter as an example
+                  backgroundColor: color.withOpacity(0.2), // Adjust color for background
+                  child: Text(
+                    recommendation[0], // Display the first letter as an example
+                    style: const TextStyle(color: Colors.black),
+                  ),
                 ),
               ),
               const SizedBox(width: 8.0),
               Expanded(
                 child: Text(
                   recommendation,
-                  style: TextStyle(fontSize: 18, color: Colors.black),
+                  style: const TextStyle(fontSize: 18, color: Colors.black),
                 ),
               ),
             ],
