@@ -1,115 +1,151 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-// Mock function to simulate an AI API call that returns personalized data
-Future<Map<String, dynamic>> fetchAIRecommendations(
-    List<String> userInterests) async {
-  // Replace this with the actual call to your AI service endpoint
-  await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
-
-  return {
-    'userName': 'Alex', // Replace with dynamic user name from AI response
-    'careerTimeline': [
-      'Learn basics of programming',
-      'Complete a project in Software Engineering',
-      'Apply for internships',
-      'Get certified in advanced topics',
-      'Land your first job as a Software Engineer'
-    ]
-  };
-}
+import 'hero_animating_recommendation_card.dart'; // Add this import
+import 'utils.dart';
+import 'widgets.dart';
+import 'recommendations_details.dart';
 
 class RecommendationsTab extends StatefulWidget {
-  const RecommendationsTab({Key? key}) : super(key: key);
+  static const title = 'Recommendations';
+  static const androidIcon = Icon(Icons.recommend);
+  static const iosIcon = Icon(CupertinoIcons.star);
+
+  const RecommendationsTab({super.key, this.androidDrawer});
+
+  final Widget? androidDrawer;
 
   @override
-  _RecommendationsTabState createState() => _RecommendationsTabState();
+  State<RecommendationsTab> createState() => _RecommendationsTabState();
 }
 
 class _RecommendationsTabState extends State<RecommendationsTab> {
-  final List<String> userInterests = [
-    'Software Engineering',
-    'Web Development'
-  ];
-  List<DocumentSnapshot> recommendedCourses = [];
-  Map<String, dynamic> personalizedData = {};
+  static const _itemsLength = 50;
+
+  final _androidRefreshKey = GlobalKey<RefreshIndicatorState>();
+
+  late List<MaterialColor> colors;
+  late List<String> recommendationNames;
 
   @override
   void initState() {
+    _setData();
     super.initState();
-    _initializeData();
   }
 
-  Future<void> _initializeData() async {
-    // Fetch recommended courses and personalized AI data
-    recommendedCourses = await getCourseRecommendations(userInterests);
-    personalizedData = await fetchAIRecommendations(userInterests);
-    setState(() {});
+  void _setData() {
+    colors = getRandomColors(_itemsLength);
+    recommendationNames = getRandomNames(_itemsLength); // Replace with real recommendation names
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Recommendations')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          if (personalizedData.isNotEmpty) ...[
-            Text(
-              'Hello, ${personalizedData['userName']}!',
-              style: Theme.of(context).textTheme.headlineMedium,
+  Future<void> _refreshData() {
+    return Future.delayed(
+      const Duration(seconds: 2),
+      () => setState(() => _setData()),
+    );
+  }
+
+  Widget _listBuilder(BuildContext context, int index) {
+    if (index >= _itemsLength) return Container();
+
+    final color = defaultTargetPlatform == TargetPlatform.iOS
+        ? colors[index]
+        : colors[index].shade400;
+
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: Hero(
+        tag: index,
+        child: HeroAnimatingRecommendationCard(
+          recommendation: recommendationNames[index],
+          color: color,
+          heroAnimation: const AlwaysStoppedAnimation(0),
+          onPressed: () => Navigator.of(context).push<void>(
+            MaterialPageRoute(
+              builder: (context) => RecommendationDetailTab(
+                id: index,
+                recommendation: recommendationNames[index],
+                color: color,
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Here’s your career path to becoming a successful ${userInterests[0]}:',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 16),
-            ...((personalizedData['careerTimeline'] as List?)
-                    ?.map<Widget>((step) {
-                  return ListTile(
-                    leading:
-                        Icon(Icons.check_circle_outline, color: Colors.green),
-                    title: Text(step
-                        .toString()), // Ensuring step is converted to String
-                  );
-                }).toList() ??
-                []), // If null, fallback to an empty list
-            const Divider(),
-            const SizedBox(height: 16),
-          ],
-          Text(
-            'Recommended Courses:',
-            style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 8),
-          ...recommendedCourses.map((course) {
-            var courseData = course.data() as Map<String, dynamic>;
-            return ListTile(
-              title: Text((courseData['name'] ?? 'Course Name').toString()),
-              subtitle: Text(
-                  'Difficulty: ${(courseData['difficulty'] ?? 'Unknown').toString()}'),
-              onTap: () {
-                // Navigate to course detail if necessary
-              },
-            );
-          }).toList(),
-        ],
+        ),
       ),
     );
   }
-}
 
-// Function to fetch recommended courses
-Future<List<DocumentSnapshot>> getCourseRecommendations(
-    List<String> userInterests) async {
-  final querySnapshot = await FirebaseFirestore.instance
-      .collection('courses')
-      .where('careerPaths', arrayContainsAny: userInterests)
-      .get();
+  void _togglePlatform() {
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    } else {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    }
+    WidgetsBinding.instance.reassembleApplication();
+  }
 
-  final sortedCourses = querySnapshot.docs
-    ..sort(
-        (a, b) => (a['difficulty'] as int).compareTo(b['difficulty'] as int));
-  return sortedCourses;
+  Widget _buildAndroid(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(RecommendationsTab.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () async => await _androidRefreshKey.currentState!.show(),
+          ),
+          IconButton(
+            icon: const Icon(Icons.shuffle),
+            onPressed: _togglePlatform,
+          ),
+        ],
+      ),
+      drawer: widget.androidDrawer,
+      body: RefreshIndicator(
+        key: _androidRefreshKey,
+        onRefresh: _refreshData,
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          itemCount: _itemsLength,
+          itemBuilder: _listBuilder,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIos(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        CupertinoSliverNavigationBar(
+          trailing: CupertinoButton(
+            padding: EdgeInsets.zero,
+            onPressed: _togglePlatform,
+            child: const Icon(CupertinoIcons.shuffle),
+          ),
+        ),
+        CupertinoSliverRefreshControl(
+          onRefresh: _refreshData,
+        ),
+        SliverSafeArea(
+          top: false,
+          sliver: SliverPadding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                _listBuilder,
+                childCount: _itemsLength,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(context) {
+    return PlatformWidget(
+      androidBuilder: _buildAndroid,
+      iosBuilder: _buildIos,
+    );
+  }
 }

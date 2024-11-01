@@ -1,22 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'hero_animating_recommendation_card.dart'; // Add this import
 import 'widgets.dart';
 
-/// Page shown when a card in the songs tab is tapped.
+/// Page shown when a card in the recommendations tab is tapped.
 ///
 /// On Android, this page sits at the top of your app. On iOS, this page is on
-/// top of the songs tab's content but is below the tab bar itself.
-class SongDetailTab extends StatelessWidget {
-  const SongDetailTab({
+/// top of the recommendations tab's content but is below the tab bar itself.
+class RecommendationDetailTab extends StatelessWidget {
+  const RecommendationDetailTab({
     required this.id,
-    required this.song,
+    required this.recommendation,
     required this.color,
     super.key,
   });
 
   final int id;
-  final String song;
+  final String recommendation;
   final Color color;
 
   Widget _buildBody() {
@@ -29,19 +29,15 @@ class SongDetailTab extends StatelessWidget {
         children: [
           Hero(
             tag: id,
-            child: HeroAnimatingSongCard(
-              song: song,
+            child: HeroAnimatingRecommendationCard(
+              recommendation: recommendation,
               color: color,
               heroAnimation: const AlwaysStoppedAnimation(1),
             ),
-            // This app uses a flightShuttleBuilder to specify the exact widget
-            // to build while the hero transition is mid-flight.
-            //
-            // It could either be specified here or in SongsTab.
             flightShuttleBuilder: (context, animation, flightDirection,
                 fromHeroContext, toHeroContext) {
-              return HeroAnimatingSongCard(
-                song: song,
+              return HeroAnimatingRecommendationCard(
+                recommendation: recommendation,
                 color: color,
                 heroAnimation: animation,
               );
@@ -58,14 +54,14 @@ class SongDetailTab extends StatelessWidget {
                 0 => const Padding(
                     padding: EdgeInsets.only(left: 15, top: 16, bottom: 8),
                     child: Text(
-                      'You might also like:',
+                      'Related recommendations:',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                _ => const SongPlaceholderTile(),
+                _ => const RecommendationPlaceholderTile(),
               },
             ),
           ),
@@ -74,13 +70,9 @@ class SongDetailTab extends StatelessWidget {
     );
   }
 
-  // ===========================================================================
-  // Non-shared code below because we're using different scaffolds.
-  // ===========================================================================
-
   Widget _buildAndroid(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(song)),
+      appBar: AppBar(title: Text(recommendation)),
       body: _buildBody(),
     );
   }
@@ -88,8 +80,8 @@ class SongDetailTab extends StatelessWidget {
   Widget _buildIos(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text(song),
-        previousPageTitle: 'Songs',
+        middle: Text(recommendation),
+        previousPageTitle: 'Recommendations',
       ),
       child: _buildBody(),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'news_tab.dart';
 import 'profile_tab.dart';
@@ -13,6 +14,7 @@ import 'login_screen.dart'; //second screen
 import 'welcome_screen.dart'; //third screen before accessing main app
 import 'signup_screen.dart'; //linked screen
 import 'interest_selection_screen.dart'; //second screen after linked screen - if user doesn't have an account
+import 'recommendations_tab.dart';
 
 const Color babyPowder = Color(0xFFFFF7F7); // Baby Powder
 const Color pinkLavender = Color(0xFFFBCAEF); // Pink Lavender
@@ -34,6 +36,17 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   ); // Initialize Firebase
   runApp(MyAdaptingApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Just Like Her App',
+      theme: ThemeData(primarySwatch: Colors.pink),
+      home: RecommendationsTab(), // Set RecommendationsTab as the default home
+    );
+  }
 }
 
 class MyAdaptingApp extends StatelessWidget {
