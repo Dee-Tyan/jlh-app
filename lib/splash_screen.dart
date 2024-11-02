@@ -37,18 +37,18 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-         backgroundColor: Color(0xFF0001), //0b0014
+         backgroundColor: Color(0xFF0B0014), //0b0014
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
               'assets/images/jlk_logo.png', // Replace with your app logo asset path
-              height: 100,
-              width: 100,
+              height: 200,
+              width: 200,
             ),
             SizedBox(height: 20),
-            CircularProgressIndicator(), // Display a loading indicator
+            // CircularProgressIndicator(), // Display a loading indicator
           ],
         ),
       ),
