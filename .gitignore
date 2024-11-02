@@ -72,3 +72,4 @@
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 lib/image_processor.dart
 lib/vision_api_service.dart
+lib/recommendations_tab.dart
