@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'hero_animating_recommendation_card.dart'; // Add this import
-import 'utils.dart';
+import 'package:image_picker/image_picker.dart'; // New import for image picking
+import 'dart:io';
+
+import 'utils.dart'; // Update this import based on the helper functions available
 import 'widgets.dart';
-import 'recommendations_details.dart';
 
 class FutureSelfView extends StatelessWidget {
   final String originalImageUrl;
@@ -21,10 +21,10 @@ class FutureSelfView extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Current You"),
-        Image.network(originalImageUrl),
+        const Text("Current You"),
+        Image.file(File(originalImageUrl)),
         const SizedBox(height: 20),
-        Text("Future You"),
+        const Text("Future You"),
         if (enhancedImageUrl != null)
           Image.network(enhancedImageUrl!)
         else
@@ -34,147 +34,143 @@ class FutureSelfView extends StatelessWidget {
   }
 }
 
-
 class RecommendationsTab extends StatefulWidget {
-  static const title = 'Recommendations';
-  static const androidIcon = Icon(Icons.recommend);
-  static const iosIcon = Icon(CupertinoIcons.star);
-
-  const RecommendationsTab({super.key, this.androidDrawer});
-
-  final Widget? androidDrawer;
+  const RecommendationsTab({Key? key}) : super(key: key);
 
   @override
   State<RecommendationsTab> createState() => _RecommendationsTabState();
 }
 
 class _RecommendationsTabState extends State<RecommendationsTab> {
-  static const _itemsLength = 50;
-
   final _androidRefreshKey = GlobalKey<RefreshIndicatorState>();
-
-  late List<MaterialColor> colors;
-  late List<String> recommendationNames;
+  File? _uploadedImage;
+  String? _enhancedImageUrl;
 
   @override
   void initState() {
-    _setData();
     super.initState();
   }
 
-  void _setData() {
-    colors = getRandomColors(_itemsLength);
-    recommendationNames = getRandomNames(_itemsLength); // Replace with real recommendation names
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _uploadedImage = File(pickedFile.path);
+        _enhancedImageUrl = null;
+      });
+      _enhanceImage();
+    }
   }
 
-  Future<void> _refreshData() {
-    return Future.delayed(
-      const Duration(seconds: 2),
-      () => setState(() => _setData()),
-    );
+  void _enhanceImage() {
+    Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        _enhancedImageUrl = "https://example.com/enhanced_image.jpg";
+      });
+    });
   }
 
-  Widget _listBuilder(BuildContext context, int index) {
-    if (index >= _itemsLength) return Container();
-
-    final color = defaultTargetPlatform == TargetPlatform.iOS
-        ? colors[index]
-        : colors[index].shade400;
-
-    return SafeArea(
-      top: false,
-      bottom: false,
-      child: Hero(
-        tag: index,
-        child: HeroAnimatingRecommendationCard(
-          recommendation: recommendationNames[index],
-          color: color,
-          heroAnimation: const AlwaysStoppedAnimation(0),
-          onPressed: () => Navigator.of(context).push<void>(
-            MaterialPageRoute(
-              builder: (context) => RecommendationDetailTab(
-                id: index,
-                recommendation: recommendationNames[index],
-                color: color,
-              ),
-            ),
-          ),
+  Widget _buildMotivationSection() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Text(
+        "Believe in your future self! Every small step brings you closer to who you want to become.",
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.grey[800],
         ),
+        textAlign: TextAlign.center,
       ),
     );
   }
 
-  void _togglePlatform() {
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      debugDefaultTargetPlatformOverride = TargetPlatform.android;
-    } else {
-      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-    }
-    WidgetsBinding.instance.reassembleApplication();
+  Widget _buildAchievementsList() {
+    List<String> achievements = [
+      "Complete basic coding course",
+      "Join STEM workshops",
+      "Finish project portfolio",
+      "Connect with a mentor",
+      "Participate in a hackathon",
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: achievements.map((achievement) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.check_box_outline_blank,
+                  color: Colors.pinkAccent, // Brand color
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    achievement,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
   }
 
   Widget _buildAndroid(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(RecommendationsTab.title),
+        title: const Text("Your Future Steps"),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () async => await _androidRefreshKey.currentState!.show(),
           ),
-          IconButton(
-            icon: const Icon(Icons.shuffle),
-            onPressed: _togglePlatform,
-          ),
         ],
       ),
-      drawer: widget.androidDrawer,
-      body: RefreshIndicator(
-        key: _androidRefreshKey,
-        onRefresh: _refreshData,
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          itemCount: _itemsLength,
-          itemBuilder: _listBuilder,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildIos(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        CupertinoSliverNavigationBar(
-          trailing: CupertinoButton(
-            padding: EdgeInsets.zero,
-            onPressed: _togglePlatform,
-            child: const Icon(CupertinoIcons.shuffle),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ElevatedButton(
+            onPressed: _pickImage,
+            child: const Text("Upload Your Image"),
           ),
-        ),
-        CupertinoSliverRefreshControl(
-          onRefresh: _refreshData,
-        ),
-        SliverSafeArea(
-          top: false,
-          sliver: SliverPadding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                _listBuilder,
-                childCount: _itemsLength,
+          if (_uploadedImage != null)
+            FutureSelfView(
+              originalImageUrl: _uploadedImage!.path,
+              enhancedImageUrl: _enhancedImageUrl,
+            ),
+          const SizedBox(height: 20),
+          _buildMotivationSection(),
+          const SizedBox(height: 20),
+          const Text(
+            "Steps to Achieve Your Goals:",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: RefreshIndicator(
+              key: _androidRefreshKey,
+              onRefresh: () => Future.delayed(const Duration(seconds: 2)),
+              child: SingleChildScrollView(
+                child: _buildAchievementsList(),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   @override
-  Widget build(context) {
-    return PlatformWidget(
-      androidBuilder: _buildAndroid,
-      iosBuilder: _buildIos,
-    );
+  Widget build(BuildContext context) {
+    return _buildAndroid(context);
   }
 }

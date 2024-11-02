@@ -38,16 +38,16 @@ void main() async {
   runApp(MyAdaptingApp());
 }
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Just Like Her App',
-      theme: ThemeData(primarySwatch: Colors.pink),
-      home: RecommendationsTab(), // Set RecommendationsTab as the default home
-    );
-  }
-}
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Just Like Her App',
+//       theme: ThemeData(primarySwatch: Colors.pink),
+//       home: RecommendationsTab(), // Set RecommendationsTab as the default home
+//     );
+//   }
+// }
 
 class MyAdaptingApp extends StatelessWidget {
   const MyAdaptingApp({super.key});
@@ -106,6 +106,8 @@ class MyAdaptingApp extends StatelessWidget {
         '/welcome': (context) => WelcomeScreen(),
         '/signup': (context) => SignupScreen(),
         '/interestSelection': (context) => InterestSelectionScreen(),
+        '/home':  (context) =>
+            const RecommendationsTab(),
         '/main': (context) =>
             const PlatformAdaptingHomePage(), // Main app content
       },
@@ -200,8 +202,8 @@ class _PlatformAdaptingHomePageState extends State<PlatformAdaptingHomePage> {
         assert(index <= 2 && index >= 0, 'Unexpected tab index: $index');
         return switch (index) {
           0 => CupertinoTabView(
-              defaultTitle: SongsTab.title,
-              builder: (context) => SongsTab(key: songsTabKey),
+              defaultTitle: 'Timeline',
+              builder: (context) => RecommendationsTab(key: songsTabKey),
             ),
           1 => CupertinoTabView(
               defaultTitle: NewsTab.title,

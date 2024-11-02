@@ -3,7 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'interest_selection_screen.dart';
 import 'signup_screen.dart';
+import 'recommendations_tab.dart';
 import 'main.dart'; // Import your main page
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -23,38 +27,53 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _errorMessage;
 
   Future<void> _login() async {
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-              email: _emailController.text.trim(),
-              password: _passwordController.text);
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text);
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      bool interestSelected = prefs.getBool('interestSelected') ?? false;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool interestSelected = prefs.getBool('interestSelected') ?? false;
 
+    if (!interestSelected) {
+      // Check Firebase for interest selection
+      final user = FirebaseAuth.instance.currentUser;
+      final interestsDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get();
+
+      interestSelected = interestsDoc.exists && interestsDoc.data()?['interestSelected'] == true;
+
+      // Save locally to SharedPreferences for future logins
       if (interestSelected) {
-        // Navigate to Main Page if interest is already selected
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PlatformAdaptingHomePage(),
-          ),
-        );
-      } else {
-        // Navigate to Interest Selection if interest is not yet selected
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => InterestSelectionScreen(),
-          ),
-        );
+        await prefs.setBool('interestSelected', true);
       }
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorMessage = e.message;
-      });
     }
+
+    // Navigate based on interest selection status
+    if (interestSelected) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RecommendationsTab(),
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => InterestSelectionScreen(),
+        ),
+      );
+    }
+  } on FirebaseAuthException catch (e) {
+    setState(() {
+      _errorMessage = e.message;
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {

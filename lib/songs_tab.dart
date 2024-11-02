@@ -7,7 +7,7 @@ import 'utils.dart';
 import 'widgets.dart';
 
 class SongsTab extends StatefulWidget {
-  static const title = 'Courses';
+  static const title = 'Timeline';
   static const androidIcon = Icon(Icons.read_more);
   static const iosIcon = Icon(CupertinoIcons.book);
 
