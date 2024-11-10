@@ -1,4 +1,4 @@
-# JUST LIKE HER (JLK) APP
+# JUST LIKE HER (JLH) APP
 
 
-### A personalized application for young african girls to guide them through career success.
+### Empowering young girls to envision, pursue, and achieve their dream careers by guiding them through a personalized journey with mentorship, resources, and a vision of their future selves.
