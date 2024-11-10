@@ -1,20 +1,21 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'package:jlk_app/image_upload_page.dart';
+
+import 'firebase_options.dart';
+import 'interest_selection_screen.dart'; //second screen after linked screen - if user doesn't have an account
+import 'login_screen.dart'; //second screen
 import 'news_tab.dart';
 import 'profile_tab.dart';
-import 'settings_tab.dart';
-import 'songs_tab.dart';
-import 'widgets.dart';
-import 'splash_screen.dart'; //first screen
-import 'login_screen.dart'; //second screen
-import 'welcome_screen.dart'; //third screen before accessing main app
-import 'signup_screen.dart'; //linked screen
-import 'interest_selection_screen.dart'; //second screen after linked screen - if user doesn't have an account
 import 'recommendations_tab.dart';
+import 'settings_tab.dart';
+import 'signup_screen.dart'; //linked screen
+import 'songs_tab.dart';
+import 'splash_screen.dart'; //first screen
+import 'welcome_screen.dart'; //third screen before accessing main app
+import 'widgets.dart';
 
 const Color babyPowder = Color(0xFFFFF7F7); // Baby Powder
 const Color pinkLavender = Color(0xFFFBCAEF); // Pink Lavender
@@ -57,6 +58,7 @@ class MyAdaptingApp extends StatelessWidget {
     // Either Material or Cupertino widgets work in either Material or Cupertino
     // Apps.
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Just Like Her App',
       // theme: ThemeData(
       //   // Use the green theme for Material widgets.
@@ -71,11 +73,12 @@ class MyAdaptingApp extends StatelessWidget {
           foregroundColor: babyPowder,
         ),
         colorScheme: ColorScheme.light(
-          primary: darkPink,
-          secondary: pinkLavender,
-          surface: babyPowder,
-          // surface: blackOlive,
-        ),
+            primary: darkPink,
+            secondary: pinkLavender,
+            surface: babyPowder,
+            secondaryContainer: darkPink
+            // surface: blackOlive,
+            ),
         textTheme: TextTheme(
           bodyLarge: TextStyle(color: blackOlive),
           bodyMedium: TextStyle(color: licorice),
@@ -89,11 +92,11 @@ class MyAdaptingApp extends StatelessWidget {
           foregroundColor: babyPowder,
         ),
         colorScheme: ColorScheme.dark(
-          primary: licorice,
-          secondary: darkPink,
-          background: blackOlive,
-          surface: pinkLavender,
-        ),
+            primary: licorice,
+            secondary: darkPink,
+            background: blackOlive,
+            surface: pinkLavender,
+            secondaryContainer: darkPink),
         textTheme: TextTheme(
           bodyLarge: TextStyle(color: babyPowder),
           bodyMedium: TextStyle(color: pinkLavender),
@@ -106,10 +109,10 @@ class MyAdaptingApp extends StatelessWidget {
         '/welcome': (context) => WelcomeScreen(),
         '/signup': (context) => SignupScreen(),
         '/interestSelection': (context) => InterestSelectionScreen(),
-        '/home':  (context) =>
-            const RecommendationsTab(),
-        '/main': (context) =>
-            const PlatformAdaptingHomePage(), // Main app content
+        '/home': (context) => const RecommendationsTab(),
+        '/main': (context) => const RecommendationsTab(),
+        '/imageUpload': (context) => ImageUploadPage(),
+        // const PlatformAdaptingHomePage(), // Main app content
       },
       // builder: (context, child) {
       //   return CupertinoTheme(

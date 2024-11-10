@@ -14,7 +14,7 @@ class _InterestSelectionScreenState extends State<InterestSelectionScreen> {
   final List<String> _allInterests = [
     "Software Engineering",
     "Medicine",
-    "Design",
+    "Software Design",
     "Business",
     "Music",
     "Art",
@@ -29,13 +29,13 @@ class _InterestSelectionScreenState extends State<InterestSelectionScreen> {
             .doc(user.uid)
             .set({'interests': _selectedInterests});
         print("Interests saved successfully!");
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OnboardingCompleteScreen(),
-          ),
-        );
+        await Navigator.pushReplacementNamed(context, '/imageUpload');
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => OnboardingCompleteScreen(),
+        //   ),
+        // );
       } else {
         print("User is not logged in!");
         // Handle the case where the user is not logged in.

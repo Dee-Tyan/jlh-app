@@ -1,15 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'interest_selection_screen.dart';
-import 'signup_screen.dart';
-import 'recommendations_tab.dart';
-import 'main.dart'; // Import your main page
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'interest_selection_screen.dart';
+import 'recommendations_tab.dart';
+import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -27,53 +29,54 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _errorMessage;
 
   Future<void> _login() async {
-  try {
-    UserCredential userCredential = await FirebaseAuth.instance
-        .signInWithEmailAndPassword(
-            email: _emailController.text.trim(),
-            password: _passwordController.text);
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: _emailController.text.trim(),
+              password: _passwordController.text);
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool interestSelected = prefs.getBool('interestSelected') ?? false;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool interestSelected = prefs.getBool('interestSelected') ?? false;
 
-    if (!interestSelected) {
-      // Check Firebase for interest selection
-      final user = FirebaseAuth.instance.currentUser;
-      final interestsDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user!.uid)
-          .get();
+      if (!interestSelected) {
+        // Check Firebase for interest selection
+        final user = FirebaseAuth.instance.currentUser;
+        final interestsDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .get();
+        interestSelected = interestsDoc.exists;
 
-      interestSelected = interestsDoc.exists && interestsDoc.data()?['interestSelected'] == true;
-
-      // Save locally to SharedPreferences for future logins
-      if (interestSelected) {
-        await prefs.setBool('interestSelected', true);
+        // Save locally to SharedPreferences for future logins
+        if (interestSelected) {
+          await prefs.setBool('interestSelected', true);
+        }
+        log('Saved correctly');
       }
-    }
 
-    // Navigate based on interest selection status
-    if (interestSelected) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RecommendationsTab(),
-        ),
-      );
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => InterestSelectionScreen(),
-        ),
-      );
+      // Navigate based on interest selection status
+      if (interestSelected) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RecommendationsTab(),
+          ),
+        );
+        log('Worked');
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => InterestSelectionScreen(),
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _errorMessage = e.message;
+      });
     }
-  } on FirebaseAuthException catch (e) {
-    setState(() {
-      _errorMessage = e.message;
-    });
   }
-}
 
   @override
   Widget build(BuildContext context) {
